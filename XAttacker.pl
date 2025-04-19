@@ -1,4 +1,46 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
+use threads;
+use Thread::Queue;
+
+# Number of threads to use
+my $num_threads = 4;
+
+# Shared task queue
+my $tasks = Thread::Queue->new();
+
+# Worker subroutine for threading
+sub worker {
+    while (defined(my $task = $tasks->dequeue())) {
+        print "Thread " . threads->tid() . " is processing task $task\n";
+        # Add your task processing logic here
+        # e.g., calling a function to attack a target
+        sleep(1); # Simulate processing time
+    }
+    print "Thread " . threads->tid() . " is exiting\n";
+}
+
+# Initialize threads
+my @threads;
+for (1..$num_threads) {
+    push @threads, threads->create(\&worker);
+}
+
+# Example: Add tasks to the queue
+# Replace this part with the actual tasks you want to process
+for my $task_id (1..20) {
+    $tasks->enqueue($task_id);
+}
+
+# Signal threads to exit once the tasks are done
+$tasks->end();
+
+# Wait for all threads to finish
+$_->join() for @threads;
+
+print "All tasks are completed.\n";
+#!/usr/bin/perl
 
 #Coded By Mohamed Riahi 10/10/2017
 #don't Change my Rights
